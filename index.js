@@ -1,13 +1,14 @@
+require('dotenv').config()
 const express = require('express')
 const router = require('./routes/router')
-const passport = require('passport')
+const passportLib = require('./middlewares/passport')
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.use(express.json())
 // letakkan initialize passport sblm router
-app.use(passport.initialize())
+app.use(passportLib.initialize())
 
 app.use(router)
 

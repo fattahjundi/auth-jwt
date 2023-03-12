@@ -4,14 +4,16 @@ const { User } = require('../models/index')
 
 const option = {
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: 'rahasia'
+    secretOrKey: 'rahasia',
+    
 }
 
 passport.use(new JwtStrategy(option, (payload, done) => {
-    User.findByPk(payload.id)
+    User.findOne({
+        where: {id: payload.id}
+    })
         .then(user => done(null, user))
-        .catch(user => done(err, false))
+        .catch(err => done(err, false))
 }))
-
 
 module.exports = passport

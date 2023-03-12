@@ -1,8 +1,22 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { User } = require('../models/index')
-
 const rahasia = 'rahasia'
+
+const getUser = (req, res) => {
+    User.findOne({
+        where: {id: req.params.id}
+    }).then(result => {
+        res.json({
+            status: 200,
+            message: 'success get user data',
+            data: result
+        })
+    }).catch(err => res.json({
+        status: 500,
+        message: err
+    }))
+}
 
 const register = (req, res) => {
     const rawData = {
@@ -21,6 +35,11 @@ const register = (req, res) => {
         return res.json({
             id: result.id,
             username: result.username
+        })
+    }).catch(err => {
+        return res.json({
+            status: 500,
+            message: err
         })
     })
 }
@@ -52,22 +71,56 @@ const login = (req, res) => {
         return res.json({
             id: user.id,
             username: user.username,
-            token: accessToken
+            accessToken: accessToken
+        })
+    }).catch(err => {
+        return res.json({
+            status: 500,
+            message: err
         })
     })
 }
 
-const whoAmI = (req, res) => {
+const whoami = (req, res) => {
     const currentUser = req.user
-    console.log(req.user.id);
+    // console.log(currentUser);
     return res.json({
-        id: req.user.id,
+        id: currentUser.id,
         username: currentUser.username
+    }).catch(err => {
+        return res.json({
+            status: 500,
+            message: err
+        })
+    })
+}
+
+const updatePhoto = (req, res) => {
+    User.update({
+        avatar: req.query.url
+    }, {
+        where: {id: req.params.id}
+    }).then(result => {
+        res.json({
+            status: 200,
+            message: 'photo updated',
+            data: {
+                id: req.params.id,
+                url: req.query.url
+            }
+        })
+    }).catch(err => {
+        res.json({
+            status: 500,
+            message: err
+        })
     })
 }
 
 module.exports = {
+    getUser,
     register,
     login,
-    whoAmI
+    whoami,
+    updatePhoto
 }
